@@ -17,8 +17,16 @@ async function main() {
       slug: 'boa-noite',
     },
     {
+      name: 'Cristão',
+      slug: 'cristao',
+    },
+    {
       name: 'Motivacional',
       slug: 'motivacional',
+    },
+    {
+      name: 'Amor',
+      slug: 'amor',
     },
   ];
 
@@ -29,31 +37,6 @@ async function main() {
       },
       update: {},
       create: category,
-    });
-  }
-
-  const bomDia = await prisma.category.findFirst({
-    where: {
-      slug: 'bom-dia',
-    },
-  });
-
-  if (bomDia) {
-    await prisma.image.upsert({
-      where: {
-        hash: 'imagem-teste-1',
-      },
-
-      update: {},
-
-      create: {
-        title: 'Bom dia com café',
-        imageUrl: 'https://placehold.co/600x800',
-        thumbnailUrl: 'https://placehold.co/300x400',
-        sourceUrl: 'https://example.com',
-        hash: 'imagem-teste-1',
-        categoryId: bomDia.id,
-      },
     });
   }
 }

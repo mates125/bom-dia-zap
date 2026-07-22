@@ -13,9 +13,7 @@ describe('ImagesController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ImagesController],
-      providers: [
-        { provide: ImagesService, useValue: imagesService },
-      ],
+      providers: [{ provide: ImagesService, useValue: imagesService }],
     }).compile();
 
     controller = module.get<ImagesController>(ImagesController);
@@ -27,12 +25,15 @@ describe('ImagesController', () => {
 
   describe('findAll', () => {
     it('parses query params and delegates to imagesService.findAll', async () => {
-      const response = { data: [], meta: { total: 0, page: 3, limit: 5, totalPages: 0 } };
+      const response = {
+        data: [],
+        meta: { total: 0, page: 3, limit: 5, totalPages: 0 },
+      };
       imagesService.findAll.mockResolvedValue(response);
 
-      await expect(
-        controller.findAll('bom-dia', '3', '5'),
-      ).resolves.toBe(response);
+      await expect(controller.findAll('bom-dia', '3', '5')).resolves.toBe(
+        response,
+      );
       expect(imagesService.findAll).toHaveBeenCalledWith({
         category: 'bom-dia',
         page: 3,

@@ -17,10 +17,7 @@ describe('ImagesService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ImagesService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [ImagesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<ImagesService>(ImagesService);

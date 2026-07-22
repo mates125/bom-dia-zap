@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ScraperService } from './scraper/scraper.service';
+import { ContentService } from './content/content.service';
 
 describe('AppController', () => {
   let appController: AppController;
-  let scraperService: { scrapeAllCategories: jest.Mock };
+  let contentService: { generateForAllCategories: jest.Mock };
 
   beforeEach(async () => {
-    scraperService = {
-      scrapeAllCategories: jest.fn(),
+    contentService = {
+      generateForAllCategories: jest.fn(),
     };
 
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
         AppService,
-        { provide: ScraperService, useValue: scraperService },
+        { provide: ContentService, useValue: contentService },
       ],
     }).compile();
 
@@ -29,13 +29,13 @@ describe('AppController', () => {
     });
   });
 
-  describe('scrape', () => {
-    it('delegates to scraperService.scrapeAllCategories', async () => {
+  describe('generate', () => {
+    it('delegates to contentService.generateForAllCategories', async () => {
       const result = [{ category: 'bom-dia', saved: 3 }];
-      scraperService.scrapeAllCategories.mockResolvedValue(result);
+      contentService.generateForAllCategories.mockResolvedValue(result);
 
-      await expect(appController.scrape()).resolves.toBe(result);
-      expect(scraperService.scrapeAllCategories).toHaveBeenCalledTimes(1);
+      await expect(appController.generate()).resolves.toBe(result);
+      expect(contentService.generateForAllCategories).toHaveBeenCalledTimes(1);
     });
   });
 });

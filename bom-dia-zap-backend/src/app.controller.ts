@@ -1,22 +1,21 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ScraperService } from './scraper/scraper.service';
+import { ContentService } from './content/content.service';
 
 @Controller()
-  export class AppController {
-    constructor(
+export class AppController {
+  constructor(
     private readonly appService: AppService,
-    private readonly scraperService: ScraperService,
-  ) {}  
+    private readonly contentService: ContentService,
+  ) {}
 
   @Get()
-    getHello(): string {
-      return this.appService.getHello();
-    }
+  getHello(): string {
+    return this.appService.getHello();
+  }
 
-  @Get('scrape')
-    scrape() {
-      return this.scraperService
-        .scrapeAllCategories();
-    }
+  @Get('generate')
+  generate() {
+    return this.contentService.generateForAllCategories();
+  }
 }

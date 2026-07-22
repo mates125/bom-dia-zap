@@ -11,11 +11,7 @@ interface FindAllParams {
 export class ImagesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll({
-    category,
-    page,
-    limit,
-  }: FindAllParams) {
+  async findAll({ category, page, limit }: FindAllParams) {
     const skip = (page - 1) * limit;
 
     const images = await this.prisma.image.findMany({

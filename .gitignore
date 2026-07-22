@@ -200,3 +200,9 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /generated/prisma
+
+# Imagens geradas pelo pipeline de conteúdo (recriadas automaticamente)
+bom-dia-zap-backend/uploads/original/*
+bom-dia-zap-backend/uploads/thumb/*
+!bom-dia-zap-backend/uploads/original/.gitkeep
+!bom-dia-zap-backend/uploads/thumb/.gitkeep

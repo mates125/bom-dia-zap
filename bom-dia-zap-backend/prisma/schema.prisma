@@ -13,17 +13,7 @@ model Category {
   slug      String   @unique
   createdAt DateTime @default(now())
 
-  images          Image[]
-  scrapedArticles ScrapedArticle[]
-}
-
-model ScrapedArticle {
-  id         Int      @id @default(autoincrement())
-  url        String   @unique
-  scrapedAt  DateTime @default(now())
-
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
+  images Image[]
 }
 
 model Image {
@@ -32,6 +22,7 @@ model Image {
   imageUrl      String
   thumbnailUrl  String?
   sourceUrl     String?
+  photographer  String?
   hash          String   @unique
 
   downloads     Int      @default(0)
