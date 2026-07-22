@@ -1,19 +1,16 @@
 import axios from 'axios';
-import * as fs from 'fs';
+import { randomUUID } from 'crypto';
 import * as path from 'path';
 import sharp from 'sharp';
-import { v4 as uuid } from 'uuid';
 
-export async function downloadImage(
-  url: string,
-) {
+export async function downloadImage(url: string) {
   const response = await axios({
     url,
     method: 'GET',
     responseType: 'arraybuffer',
   });
 
-  const filename = `${uuid()}.jpg`;
+  const filename = `${randomUUID()}.jpg`;
 
   const originalPath = path.join(
     process.cwd(),
@@ -22,12 +19,7 @@ export async function downloadImage(
     filename,
   );
 
-  const thumbPath = path.join(
-    process.cwd(),
-    'uploads',
-    'thumb',
-    filename,
-  );
+  const thumbPath = path.join(process.cwd(), 'uploads', 'thumb', filename);
 
   await sharp(response.data)
     .jpeg({
@@ -52,10 +44,8 @@ export async function downloadImage(
   return {
     filename,
 
-    originalUrl:
-      `http://localhost:3000/uploads/original/${filename}`,
+    originalUrl: `http://localhost:3000/uploads/original/${filename}`,
 
-    thumbUrl:
-      `http://localhost:3000/uploads/thumb/${filename}`,
+    thumbUrl: `http://localhost:3000/uploads/thumb/${filename}`,
   };
 }
