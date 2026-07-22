@@ -3,7 +3,11 @@ import { createHash } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { PexelsProvider } from './providers/pexels.provider';
 import { composeImage } from '../utils/compose-image';
-import { CATEGORY_SEARCH_QUERIES, PHRASE_BANK } from './phrase-bank';
+import {
+  CATEGORY_SEARCH_QUERIES,
+  CATEGORY_STYLES,
+  PHRASE_BANK,
+} from './phrase-bank';
 
 const IMAGES_PER_RUN = 8;
 
@@ -21,8 +25,9 @@ export class ContentService {
   async generateForCategory(categorySlug: string) {
     const queries = CATEGORY_SEARCH_QUERIES[categorySlug];
     const phrases = PHRASE_BANK[categorySlug];
+    const style = CATEGORY_STYLES[categorySlug];
 
-    if (!queries || !phrases) {
+    if (!queries || !phrases || !style) {
       throw new Error(
         `Categoria ${categorySlug} não configurada para geração de conteúdo`,
       );
@@ -56,7 +61,12 @@ export class ContentService {
       }
 
       try {
-        const composed = await composeImage(photo.downloadUrl, phrase);
+        const composed = await composeImage({
+          photoUrl: photo.downloadUrl,
+          phrase,
+          header: style.header,
+          accentColor: style.color,
+        });
 
         await this.prisma.image.create({
           data: {
