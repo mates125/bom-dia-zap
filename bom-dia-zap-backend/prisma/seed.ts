@@ -17,16 +17,8 @@ async function main() {
       slug: 'boa-noite',
     },
     {
-      name: 'Cristão',
-      slug: 'cristao',
-    },
-    {
       name: 'Motivacional',
       slug: 'motivacional',
-    },
-    {
-      name: 'Amor',
-      slug: 'amor',
     },
   ];
 
