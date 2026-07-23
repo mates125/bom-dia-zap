@@ -73,6 +73,11 @@ function buildOverlaySvg({
   const blockBottom = CANVAS_HEIGHT - bottomMargin;
   const blockTop = blockBottom - totalBlockHeight;
 
+  // A área escura acompanha o tamanho real do texto (em vez de uma altura
+  // fixa) para que frases mais longas — vindas da raspagem, com tamanho
+  // variável — nunca fiquem sem contraste suficiente pra leitura.
+  const scrimTop = Math.min(CANVAS_HEIGHT * 0.4, blockTop - 60);
+
   const headerY = blockTop + HEADER_FONT_SIZE * 0.85;
   const phraseStartY = headerY + gapBetween + PHRASE_FONT_SIZE * 0.85;
   const ruleY = headerY + 26;
@@ -95,7 +100,7 @@ function buildOverlaySvg({
         </linearGradient>
       </defs>
 
-      <rect x="0" y="${CANVAS_HEIGHT * 0.4}" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT * 0.6}" fill="url(#scrim)"/>
+      <rect x="0" y="${scrimTop}" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT - scrimTop}" fill="url(#scrim)"/>
 
       <!-- cabeçalho cursivo com sombra sutil -->
       <text x="${CANVAS_WIDTH / 2 + 3}" y="${headerY + 3}" font-family="${HEADER_FONT_STACK}" font-size="${HEADER_FONT_SIZE}" fill="#000000" fill-opacity="0.35" text-anchor="middle">${escapedHeader}</text>

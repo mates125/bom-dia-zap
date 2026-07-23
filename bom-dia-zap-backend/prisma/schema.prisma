@@ -13,7 +13,8 @@ model Category {
   slug      String   @unique
   createdAt DateTime @default(now())
 
-  images Image[]
+  images  Image[]
+  phrases Phrase[]
 }
 
 model Image {
@@ -34,4 +35,14 @@ model Image {
 
   categoryId    Int
   category      Category @relation(fields: [categoryId], references: [id])
+}
+
+model Phrase {
+  id         Int      @id @default(autoincrement())
+  text       String   @unique
+  source     String?
+  createdAt  DateTime @default(now())
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
 }

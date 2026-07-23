@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PHRASE_BANK } from '../src/content/phrase-bank';
 
 const prisma = new PrismaClient();
 
@@ -37,6 +38,25 @@ async function main() {
       },
       update: {},
       create: category,
+    });
+  }
+
+  for (const [categorySlug, phrases] of Object.entries(PHRASE_BANK)) {
+    const category = await prisma.category.findFirst({
+      where: { slug: categorySlug },
+    });
+
+    if (!category) {
+      continue;
+    }
+
+    await prisma.phrase.createMany({
+      data: phrases.map((text) => ({
+        text,
+        source: 'curated',
+        categoryId: category.id,
+      })),
+      skipDuplicates: true,
     });
   }
 }
