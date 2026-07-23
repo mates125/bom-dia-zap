@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { randomUUID } from 'crypto';
-import * as path from 'path';
 import sharp from 'sharp';
+import { saveFile } from './storage';
 
 const CANVAS_WIDTH = 1080;
 const CANVAS_HEIGHT = 1350;
@@ -149,27 +149,19 @@ export async function composeImage(
 
   const filename = `${randomUUID()}.jpg`;
 
-  const originalPath = path.join(
-    process.cwd(),
-    'uploads',
-    'original',
-    filename,
-  );
-
-  const thumbPath = path.join(process.cwd(), 'uploads', 'thumb', filename);
-
-  await sharp(composed).toFile(originalPath);
-
-  await sharp(composed)
+  const thumbBuffer = await sharp(composed)
     .resize({ width: 300 })
     .jpeg({ quality: 70 })
-    .toFile(thumbPath);
+    .toBuffer();
+
+  const [originalUrl, thumbUrl] = await Promise.all([
+    saveFile(composed, `original/${filename}`, 'image/jpeg'),
+    saveFile(thumbBuffer, `thumb/${filename}`, 'image/jpeg'),
+  ]);
 
   return {
     filename,
-
-    originalUrl: `http://localhost:3000/uploads/original/${filename}`,
-
-    thumbUrl: `http://localhost:3000/uploads/thumb/${filename}`,
+    originalUrl,
+    thumbUrl,
   };
 }
