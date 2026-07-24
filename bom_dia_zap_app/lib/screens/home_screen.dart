@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
+import '../models/image_item.dart';
 import '../services/api_service.dart';
 import '../widgets/category_card.dart';
 import 'category_screen.dart';
@@ -13,12 +14,35 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _api = ApiService();
-  late Future<List<Category>> _categoriesFuture;
+  late Future<_HomeData> _homeDataFuture;
 
   @override
   void initState() {
     super.initState();
-    _categoriesFuture = _api.getCategories();
+    _homeDataFuture = _loadHomeData();
+  }
+
+  Future<_HomeData> _loadHomeData() async {
+    final categories = await _api.getCategories();
+
+    final previews = <String, ImageItem?>{};
+
+    await Future.wait(
+      categories.map((category) async {
+        try {
+          final page = await _api.getImages(
+            categorySlug: category.slug,
+            limit: 1,
+          );
+          previews[category.slug] =
+              page.data.isNotEmpty ? page.data.first : null;
+        } catch (_) {
+          previews[category.slug] = null;
+        }
+      }),
+    );
+
+    return _HomeData(categories: categories, previews: previews);
   }
 
   @override
@@ -28,8 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Bom Dia Zap'),
         centerTitle: false,
       ),
-      body: FutureBuilder<List<Category>>(
-        future: _categoriesFuture,
+      body: FutureBuilder<_HomeData>(
+        future: _homeDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -47,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          final categories = snapshot.data ?? [];
+          final categories = snapshot.data?.categories ?? [];
+          final previews = snapshot.data?.previews ?? {};
 
           return GridView.builder(
             padding: const EdgeInsets.all(16),
@@ -62,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
               final category = categories[index];
               return CategoryCard(
                 category: category,
+                previewImage: previews[category.slug],
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -76,4 +102,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class _HomeData {
+  final List<Category> categories;
+  final Map<String, ImageItem?> previews;
+
+  _HomeData({required this.categories, required this.previews});
 }

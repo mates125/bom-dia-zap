@@ -66,7 +66,6 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
               name: _filename,
             ),
           ],
-          text: widget.image.title,
         ),
       );
     } catch (e) {

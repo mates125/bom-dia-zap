@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/category.dart';
+import '../models/image_item.dart';
 
 // Mesma paleta usada na composição das imagens no backend, pra manter a
 // identidade visual consistente entre o app e o conteúdo gerado.
@@ -23,14 +25,22 @@ const Map<String, IconData> categoryIcons = {
 
 class CategoryCard extends StatelessWidget {
   final Category category;
+  final ImageItem? previewImage;
   final VoidCallback onTap;
 
-  const CategoryCard({super.key, required this.category, required this.onTap});
+  const CategoryCard({
+    super.key,
+    required this.category,
+    required this.onTap,
+    this.previewImage,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final color = categoryColors[category.slug] ?? Theme.of(context).colorScheme.primary;
+    final color =
+        categoryColors[category.slug] ?? Theme.of(context).colorScheme.primary;
     final icon = categoryIcons[category.slug] ?? Icons.image_rounded;
+    final previewUrl = previewImage?.thumbnailUrl ?? previewImage?.imageUrl;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -42,26 +52,59 @@ class CategoryCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(height: 8),
-              Flexible(
-                child: Text(
-                  category.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (previewUrl != null)
+              CachedNetworkImage(
+                imageUrl: previewUrl,
+                fit: BoxFit.cover,
+              ),
+            if (previewUrl != null)
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0),
+                      Colors.black.withValues(alpha: 0.75),
+                    ],
+                    stops: const [0.35, 1],
+                  ),
                 ),
               ),
-            ],
-          ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (previewUrl == null) ...[
+                    Icon(icon, color: color, size: 28),
+                    const SizedBox(height: 8),
+                  ],
+                  Text(
+                    category.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: previewUrl != null ? Colors.white : null,
+                          shadows: previewUrl != null
+                              ? [
+                                  const Shadow(
+                                    color: Colors.black54,
+                                    blurRadius: 6,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
