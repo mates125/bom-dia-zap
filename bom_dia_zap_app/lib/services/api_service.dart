@@ -14,9 +14,10 @@ class ImagesPage {
 }
 
 class ApiService {
-  // Backend local. Em produção isso vira uma URL configurável (build flavor
-  // ou variável de ambiente) apontando pro servidor na nuvem.
-  static const String baseUrl = 'http://localhost:3000';
+  // Backend rodando no Railway. Quando existirem builds de verdade (dev/
+  // staging/prod), isso vira configurável por --dart-define em vez de
+  // fixo aqui.
+  static const String baseUrl = 'https://bom-dia-zap-production.up.railway.app';
 
   Future<List<Category>> getCategories() async {
     final response = await http.get(Uri.parse('$baseUrl/categories'));
