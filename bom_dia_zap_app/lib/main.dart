@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'services/auth_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Se restaurar a sessão travar ou falhar por qualquer motivo, o app
+  // ainda assim precisa abrir — o usuário só ficaria deslogado.
+  try {
+    await authService.loadSession().timeout(const Duration(seconds: 5));
+  } catch (_) {
+    // segue sem sessão restaurada
+  }
+
   runApp(const BomDiaZapApp());
 }
 

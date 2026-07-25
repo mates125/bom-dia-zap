@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../models/image_item.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/category_card.dart';
+import 'account_screen.dart';
 import 'category_screen.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,12 +48,37 @@ class _HomeScreenState extends State<HomeScreen> {
     return _HomeData(categories: categories, previews: previews);
   }
 
+  Future<void> _openAccount() async {
+    if (authService.isLoggedIn) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const AccountScreen()),
+      );
+    } else {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    }
+
+    // O estado de login pode ter mudado (login/logout) — atualiza o ícone.
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bom Dia Zap'),
         centerTitle: false,
+        actions: [
+          IconButton(
+            icon: Icon(
+              authService.isLoggedIn
+                  ? Icons.account_circle_rounded
+                  : Icons.account_circle_outlined,
+            ),
+            onPressed: _openAccount,
+          ),
+        ],
       ),
       body: FutureBuilder<_HomeData>(
         future: _homeDataFuture,

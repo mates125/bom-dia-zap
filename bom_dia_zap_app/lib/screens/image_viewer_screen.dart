@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import '../models/image_item.dart';
+import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import '../utils/save_image.dart';
+import 'login_screen.dart';
 
 class ImageViewerScreen extends StatefulWidget {
   final ImageItem image;
@@ -16,9 +19,37 @@ class ImageViewerScreen extends StatefulWidget {
 }
 
 class _ImageViewerScreenState extends State<ImageViewerScreen> {
+  final _api = ApiService();
   bool _isBusy = false;
+  bool _isLiked = false;
 
   String get _filename => 'bom-dia-zap-${widget.image.id}.jpg';
+
+  Future<void> _toggleLike() async {
+    if (!authService.isLoggedIn) {
+      final loggedIn = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+      if (loggedIn != true || !mounted) return;
+    }
+
+    final wasLiked = _isLiked;
+    setState(() => _isLiked = !wasLiked);
+
+    try {
+      if (wasLiked) {
+        await _api.unlikeImage(widget.image.id);
+      } else {
+        await _api.likeImage(widget.image.id);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLiked = wasLiked);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível atualizar a curtida.')),
+      );
+    }
+  }
 
   Future<Uint8List> _downloadBytes() async {
     final response = await http.get(Uri.parse(widget.image.imageUrl));
@@ -85,6 +116,15 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              color: _isLiked ? Colors.redAccent : Colors.white,
+            ),
+            onPressed: _toggleLike,
+          ),
+        ],
       ),
       body: Column(
         children: [
