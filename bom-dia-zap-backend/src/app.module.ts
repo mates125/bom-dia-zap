@@ -9,6 +9,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
+import { CollectionsModule } from './collections/collections.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { join } from 'path';
     CategoriesModule,
     ImagesModule,
     PrismaModule,
+    AuthModule,
+    CollectionsModule,
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',

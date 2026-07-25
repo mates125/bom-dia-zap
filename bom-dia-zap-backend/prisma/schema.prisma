@@ -35,6 +35,48 @@ model Image {
 
   categoryId    Int
   category      Category @relation(fields: [categoryId], references: [id])
+
+  collectionImages CollectionImage[]
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  isPremium    Boolean  @default(false)
+  premiumSince DateTime?
+  createdAt    DateTime @default(now())
+
+  collections  Collection[]
+}
+
+model Collection {
+  id        Int      @id @default(autoincrement())
+  name      String
+  // A coleção "Curtidas" é criada automaticamente pra todo usuário e não
+  // pode ser apagada nem conta pro limite de coleções do plano gratuito.
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  images CollectionImage[]
+
+  @@unique([userId, name])
+}
+
+model CollectionImage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  collectionId Int
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  imageId Int
+  image   Image @relation(fields: [imageId], references: [id])
+
+  @@unique([collectionId, imageId])
 }
 
 model Phrase {

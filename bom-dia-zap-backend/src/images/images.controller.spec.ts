@@ -1,19 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImagesController } from './images.controller';
 import { ImagesService } from './images.service';
+import { CollectionsService } from '../collections/collections.service';
 
 describe('ImagesController', () => {
   let controller: ImagesController;
   let imagesService: { findAll: jest.Mock };
+  let collectionsService: { likeImage: jest.Mock; unlikeImage: jest.Mock };
 
   beforeEach(async () => {
     imagesService = {
       findAll: jest.fn(),
     };
 
+    collectionsService = {
+      likeImage: jest.fn(),
+      unlikeImage: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ImagesController],
-      providers: [{ provide: ImagesService, useValue: imagesService }],
+      providers: [
+        { provide: ImagesService, useValue: imagesService },
+        { provide: CollectionsService, useValue: collectionsService },
+      ],
     }).compile();
 
     controller = module.get<ImagesController>(ImagesController);
@@ -51,6 +61,24 @@ describe('ImagesController', () => {
         page: 1,
         limit: 20,
       });
+    });
+  });
+
+  describe('like / unlike', () => {
+    it('delegates like to collectionsService.likeImage', async () => {
+      collectionsService.likeImage.mockResolvedValue(undefined);
+
+      await controller.like({ userId: 7 }, 42);
+
+      expect(collectionsService.likeImage).toHaveBeenCalledWith(7, 42);
+    });
+
+    it('delegates unlike to collectionsService.unlikeImage', async () => {
+      collectionsService.unlikeImage.mockResolvedValue(undefined);
+
+      await controller.unlike({ userId: 7 }, 42);
+
+      expect(collectionsService.unlikeImage).toHaveBeenCalledWith(7, 42);
     });
   });
 });
