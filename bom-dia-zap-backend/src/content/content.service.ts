@@ -126,7 +126,7 @@ export class ContentService {
             title: phrase,
             imageUrl: composed.originalUrl,
             thumbnailUrl: composed.thumbUrl,
-            sourceUrl: photo.photoUrl,
+            sourceUrl: photo.downloadUrl,
             photographer: photo.photographer,
             hash,
             categoryId: category.id,

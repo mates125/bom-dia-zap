@@ -59,6 +59,15 @@ async function main() {
       skipDuplicates: true,
     });
   }
+
+  // Correção de um bug: até 2026-07-25, `sourceUrl` guardava o link da
+  // página do Pexels (HTML) em vez da URL da foto de verdade, quebrando o
+  // editor de imagem premium (que usa `sourceUrl` como fundo sem legenda).
+  // Limpa os registros antigos afetados; imagens novas já salvam certo.
+  await prisma.image.updateMany({
+    where: { sourceUrl: { contains: 'pexels.com/photo/' } },
+    data: { sourceUrl: null },
+  });
 }
 
 main()
