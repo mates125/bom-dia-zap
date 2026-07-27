@@ -3,7 +3,6 @@ import '../models/category.dart';
 import '../models/image_item.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
-import '../widgets/banner_ad_widget.dart';
 import '../widgets/category_card.dart';
 import 'account_screen.dart';
 import 'category_screen.dart';
@@ -81,60 +80,53 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder<_HomeData>(
-              future: _homeDataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+      body: FutureBuilder<_HomeData>(
+        future: _homeDataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        'Não foi possível carregar as categorias.\nVerifique se o backend está rodando.\n\n${snapshot.error}',
-                        textAlign: TextAlign.center,
-                      ),
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Não foi possível carregar as categorias.\nVerifique se o backend está rodando.\n\n${snapshot.error}',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          }
+
+          final categories = snapshot.data?.categories ?? [];
+          final previews = snapshot.data?.previews ?? {};
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.05,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return CategoryCard(
+                category: category,
+                previewImage: previews[category.slug],
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => CategoryScreen(category: category),
                     ),
                   );
-                }
-
-                final categories = snapshot.data?.categories ?? [];
-                final previews = snapshot.data?.previews ?? {};
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.05,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    return CategoryCard(
-                      category: category,
-                      previewImage: previews[category.slug],
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => CategoryScreen(category: category),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          const SafeArea(top: false, child: BannerAdWidget()),
-        ],
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

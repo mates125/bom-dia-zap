@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'services/ad_service.dart';
 import 'services/auth_service.dart';
+import 'widgets/banner_ad_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,16 @@ class BomDiaZapApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
       ),
+      // Banner fixo embaixo, presente em todas as telas do app (não some ao
+      // navegar) — mantido montado uma única vez aqui na raiz.
+      builder: (context, child) {
+        return Column(
+          children: [
+            Expanded(child: child!),
+            const SafeArea(top: false, child: BannerAdWidget()),
+          ],
+        );
+      },
       home: const HomeScreen(),
     );
   }
