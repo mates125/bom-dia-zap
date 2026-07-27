@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'services/ad_service.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -12,6 +15,8 @@ void main() async {
   } catch (_) {
     // segue sem sessão restaurada
   }
+
+  unawaited(AdService.instance.initialize());
 
   runApp(const BomDiaZapApp());
 }

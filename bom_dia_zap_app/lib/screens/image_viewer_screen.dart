@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import '../models/image_item.dart';
+import '../services/ad_service.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../utils/save_image.dart';
@@ -24,6 +25,23 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
   bool _isLiked = false;
 
   String get _filename => 'bom-dia-zap-${widget.image.id}.jpg';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLikeStatus();
+  }
+
+  Future<void> _loadLikeStatus() async {
+    if (!authService.isLoggedIn) return;
+
+    try {
+      final isLiked = await _api.getLikeStatus(widget.image.id);
+      if (mounted) setState(() => _isLiked = isLiked);
+    } catch (_) {
+      // mantém o estado padrão (não curtido) se a checagem falhar
+    }
+  }
 
   Future<void> _toggleLike() async {
     if (!authService.isLoggedIn) {
@@ -67,6 +85,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
     try {
       final bytes = await _downloadBytes();
       await saveImageBytes(bytes, _filename);
+      AdService.instance.registerActionAndMaybeShow();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,6 +118,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
           ],
         ),
       );
+      AdService.instance.registerActionAndMaybeShow();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

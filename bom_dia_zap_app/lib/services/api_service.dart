@@ -60,6 +60,20 @@ class ApiService {
     return _parseImagesPage(response.body);
   }
 
+  Future<bool> getLikeStatus(int imageId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/images/$imageId/like'),
+      headers: authService.authHeaders,
+    );
+
+    if (response.statusCode != 200) {
+      return false;
+    }
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    return body['isLiked'] as bool? ?? false;
+  }
+
   Future<void> likeImage(int imageId) async {
     final response = await http.post(
       Uri.parse('$baseUrl/images/$imageId/like'),
