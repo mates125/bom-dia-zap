@@ -59,6 +59,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
         await _api.unlikeImage(widget.image.id);
       } else {
         await _api.likeImage(widget.image.id);
+        AdService.instance.registerActionAndMaybeShow();
       }
     } catch (e) {
       if (!mounted) return;
