@@ -46,13 +46,27 @@ describe('ImagesController', () => {
       };
       imagesService.findAll.mockResolvedValue(response);
 
-      await expect(controller.findAll('bom-dia', '3', '5')).resolves.toBe(
-        response,
-      );
+      await expect(
+        controller.findAll('bom-dia', '3', '5'),
+      ).resolves.toBe(response);
       expect(imagesService.findAll).toHaveBeenCalledWith({
         category: 'bom-dia',
         page: 3,
         limit: 5,
+        withSourceUrl: false,
+      });
+    });
+
+    it('parses withSourceUrl=true', async () => {
+      imagesService.findAll.mockResolvedValue({ data: [], meta: {} });
+
+      await controller.findAll(undefined, '1', '20', 'true');
+
+      expect(imagesService.findAll).toHaveBeenCalledWith({
+        category: undefined,
+        page: 1,
+        limit: 20,
+        withSourceUrl: true,
       });
     });
 
@@ -65,6 +79,7 @@ describe('ImagesController', () => {
         category: undefined,
         page: 1,
         limit: 20,
+        withSourceUrl: false,
       });
     });
   });

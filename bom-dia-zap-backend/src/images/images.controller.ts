@@ -27,11 +27,13 @@ export class ImagesController {
     @Query('category') category?: string,
     @Query('page') page = '1',
     @Query('limit') limit = '20',
+    @Query('withSourceUrl') withSourceUrl?: string,
   ) {
     return this.imagesService.findAll({
       category,
       page: Number(page),
       limit: Number(limit),
+      withSourceUrl: withSourceUrl === 'true',
     });
   }
 

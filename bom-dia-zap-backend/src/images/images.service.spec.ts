@@ -56,5 +56,18 @@ describe('ImagesService', () => {
         }),
       );
     });
+
+    it('filters out images without a sourceUrl when withSourceUrl is true', async () => {
+      prisma.image.findMany.mockResolvedValue([]);
+      prisma.image.count.mockResolvedValue(0);
+
+      await service.findAll({ page: 1, limit: 20, withSourceUrl: true });
+
+      expect(prisma.image.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { sourceUrl: { not: null } },
+        }),
+      );
+    });
   });
 });

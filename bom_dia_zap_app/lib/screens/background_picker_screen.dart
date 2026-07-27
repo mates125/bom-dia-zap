@@ -55,7 +55,8 @@ class _BackgroundPickerScreenState extends State<BackgroundPickerScreen> {
     });
 
     try {
-      final result = await _api.getImages(page: _page);
+      final result =
+          await _api.getImages(page: _page, withSourceUrl: true);
 
       setState(() {
         _images.addAll(result.data);
@@ -77,7 +78,18 @@ class _BackgroundPickerScreenState extends State<BackgroundPickerScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _images.isEmpty && _error != null
               ? Center(child: Text(_error!))
-              : GridView.builder(
+              : _images.isEmpty
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Text(
+                          'Nenhum fundo disponível ainda. Tente de novo em '
+                          'alguns minutos.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  : GridView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(12),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -105,7 +117,7 @@ class _BackgroundPickerScreenState extends State<BackgroundPickerScreen> {
                           );
                         },
                         child: CachedNetworkImage(
-                          imageUrl: image.sourceUrl ?? image.imageUrl,
+                          imageUrl: image.sourceUrl ?? '',
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             color: Theme.of(context)

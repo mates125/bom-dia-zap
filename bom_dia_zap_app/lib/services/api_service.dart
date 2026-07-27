@@ -47,10 +47,12 @@ class ApiService {
     String? categorySlug,
     int page = 1,
     int limit = 20,
+    bool withSourceUrl = false,
   }) async {
     final categoryParam = categorySlug != null ? '&category=$categorySlug' : '';
+    final sourceUrlParam = withSourceUrl ? '&withSourceUrl=true' : '';
     final uri = Uri.parse(
-      '$baseUrl/images?page=$page&limit=$limit$categoryParam',
+      '$baseUrl/images?page=$page&limit=$limit$categoryParam$sourceUrlParam',
     );
     final response = await http.get(uri);
 

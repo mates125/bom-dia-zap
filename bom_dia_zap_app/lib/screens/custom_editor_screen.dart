@@ -228,8 +228,7 @@ class _CustomEditorScreenState extends State<CustomEditorScreen> {
                             fit: StackFit.expand,
                             children: [
                               CachedNetworkImage(
-                                imageUrl: widget.background.sourceUrl ??
-                                    widget.background.imageUrl,
+                                imageUrl: widget.background.sourceUrl ?? '',
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) => Container(
                                   color: Colors.black26,

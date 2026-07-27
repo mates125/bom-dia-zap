@@ -1,28 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 interface FindAllParams {
   category?: string;
   page: number;
   limit: number;
+  withSourceUrl?: boolean;
 }
 
 @Injectable()
 export class ImagesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll({ category, page, limit }: FindAllParams) {
+  async findAll({ category, page, limit, withSourceUrl }: FindAllParams) {
     const skip = (page - 1) * limit;
 
-    const images = await this.prisma.image.findMany({
-      where: category
-        ? {
-            category: {
-              slug: category,
-            },
-          }
-        : undefined,
+    const where: Prisma.ImageWhereInput = {
+      ...(category ? { category: { slug: category } } : {}),
+      // Editor premium: só faz sentido oferecer fundos 100% sem texto —
+      // nunca a versão já composta como reserva.
+      ...(withSourceUrl ? { sourceUrl: { not: null } } : {}),
+    };
 
+    const images = await this.prisma.image.findMany({
+      where,
       include: {
         category: true,
       },
@@ -35,15 +37,7 @@ export class ImagesService {
       take: limit,
     });
 
-    const total = await this.prisma.image.count({
-      where: category
-        ? {
-            category: {
-              slug: category,
-            },
-          }
-        : undefined,
-    });
+    const total = await this.prisma.image.count({ where });
 
     return {
       data: images,
