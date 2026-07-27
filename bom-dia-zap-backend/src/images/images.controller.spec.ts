@@ -6,7 +6,11 @@ import { CollectionsService } from '../collections/collections.service';
 describe('ImagesController', () => {
   let controller: ImagesController;
   let imagesService: { findAll: jest.Mock };
-  let collectionsService: { likeImage: jest.Mock; unlikeImage: jest.Mock };
+  let collectionsService: {
+    likeImage: jest.Mock;
+    unlikeImage: jest.Mock;
+    isImageLiked: jest.Mock;
+  };
 
   beforeEach(async () => {
     imagesService = {
@@ -16,6 +20,7 @@ describe('ImagesController', () => {
     collectionsService = {
       likeImage: jest.fn(),
       unlikeImage: jest.fn(),
+      isImageLiked: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -79,6 +84,15 @@ describe('ImagesController', () => {
       await controller.unlike({ userId: 7 }, 42);
 
       expect(collectionsService.unlikeImage).toHaveBeenCalledWith(7, 42);
+    });
+
+    it('delegates likeStatus to collectionsService.isImageLiked', async () => {
+      collectionsService.isImageLiked.mockResolvedValue({ isLiked: true });
+
+      await expect(
+        controller.likeStatus({ userId: 7 }, 42),
+      ).resolves.toEqual({ isLiked: true });
+      expect(collectionsService.isImageLiked).toHaveBeenCalledWith(7, 42);
     });
   });
 });

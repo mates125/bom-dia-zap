@@ -120,6 +120,15 @@ export class CollectionsService {
     await this.addImage(userId, liked.id, imageId);
   }
 
+  async isImageLiked(userId: number, imageId: number) {
+    const liked = await this.ensureLikedCollection(userId);
+    const entry = await this.prisma.collectionImage.findUnique({
+      where: { collectionId_imageId: { collectionId: liked.id, imageId } },
+    });
+
+    return { isLiked: entry !== null };
+  }
+
   async unlikeImage(userId: number, imageId: number) {
     const liked = await this.ensureLikedCollection(userId);
     await this.removeImage(userId, liked.id, imageId);

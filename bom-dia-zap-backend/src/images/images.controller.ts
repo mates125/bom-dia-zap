@@ -36,6 +36,15 @@ export class ImagesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id/like')
+  likeStatus(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.collectionsService.isImageLiked(user.userId, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post(':id/like')
   like(
     @CurrentUser() user: AuthenticatedUser,
