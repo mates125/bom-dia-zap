@@ -126,6 +126,21 @@ class ApiService {
         .toList();
   }
 
+  Future<void> addImageToCollection(int collectionId, int imageId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/collections/$collectionId/images'),
+      headers: {
+        ...authService.authHeaders,
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'imageId': imageId}),
+    );
+
+    if (response.statusCode >= 400) {
+      throw Exception('Falha ao adicionar à coleção');
+    }
+  }
+
   Future<void> createCollection(String name) async {
     final response = await http.post(
       Uri.parse('$baseUrl/collections'),
