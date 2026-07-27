@@ -44,12 +44,13 @@ class ApiService {
   }
 
   Future<ImagesPage> getImages({
-    required String categorySlug,
+    String? categorySlug,
     int page = 1,
     int limit = 20,
   }) async {
+    final categoryParam = categorySlug != null ? '&category=$categorySlug' : '';
     final uri = Uri.parse(
-      '$baseUrl/images?category=$categorySlug&page=$page&limit=$limit',
+      '$baseUrl/images?page=$page&limit=$limit$categoryParam',
     );
     final response = await http.get(uri);
 
@@ -93,6 +94,19 @@ class ApiService {
 
     if (response.statusCode >= 400) {
       throw Exception('Falha ao descurtir a imagem');
+    }
+  }
+
+  /// TEMPORÁRIO: liga/desliga premium na conta logada, só pra testar o editor
+  /// antes do Google Play Billing existir. Remover junto com o endpoint.
+  Future<void> toggleDevPremium() async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/auth/dev-toggle-premium'),
+      headers: authService.authHeaders,
+    );
+
+    if (response.statusCode >= 400) {
+      throw Exception('Falha ao alternar premium (teste)');
     }
   }
 

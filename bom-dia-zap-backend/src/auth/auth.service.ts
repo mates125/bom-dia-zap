@@ -68,6 +68,24 @@ export class AuthService {
     return this.toPublicUser(user);
   }
 
+  /**
+   * TEMPORÁRIO: só existe pra testar o editor de imagem premium antes do
+   * Google Play Billing estar pronto. Remover assim que a compra de verdade
+   * estiver integrada — deixa qualquer usuário logado virar premium de graça.
+   */
+  async toggleDevPremium(userId: number) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { isPremium: !user.isPremium },
+    });
+
+    return this.toPublicUser(updated);
+  }
+
   private buildAuthResponse(user: UserRecord) {
     const accessToken = this.jwtService.sign({ sub: user.id });
 

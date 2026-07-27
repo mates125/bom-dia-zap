@@ -1,7 +1,12 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /// IDs de teste públicos do Google. Trocar pelos IDs reais do AdMob (e pelo
 /// App ID real no AndroidManifest.xml) antes de publicar na Play Store.
+///
+/// google_mobile_ads não roda na web — este projeto só publica pra Android,
+/// mas o Flutter Web ainda é usado localmente pra testar rapidamente outras
+/// telas neste ambiente de dev, então tudo aqui vira no-op quando `kIsWeb`.
 class AdService {
   AdService._();
   static final AdService instance = AdService._();
@@ -16,14 +21,17 @@ class AdService {
   int _actionCount = 0;
 
   Future<void> initialize() async {
+    if (kIsWeb) return;
     await MobileAds.instance.initialize();
     loadInterstitial();
   }
 
-  BannerAd createBannerAd({
+  BannerAd? createBannerAd({
     required void Function(Ad ad) onLoaded,
     required void Function(Ad ad, LoadAdError error) onFailed,
   }) {
+    if (kIsWeb) return null;
+
     return BannerAd(
       adUnitId: bannerAdUnitId,
       size: AdSize.banner,
@@ -36,6 +44,8 @@ class AdService {
   }
 
   void loadInterstitial() {
+    if (kIsWeb) return;
+
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
       request: const AdRequest(),
@@ -49,6 +59,8 @@ class AdService {
   /// Chamar após ações do usuário (download, compartilhar). Mostra um
   /// intersticial a cada [_actionsPerInterstitial] chamadas.
   void registerActionAndMaybeShow() {
+    if (kIsWeb) return;
+
     _actionCount++;
     if (_actionCount < _actionsPerInterstitial) return;
     _actionCount = 0;

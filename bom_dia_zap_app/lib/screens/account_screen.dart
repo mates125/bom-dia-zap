@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import 'collections_screen.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
+
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
+  final _api = ApiService();
+  bool _isTogglingPremium = false;
+
+  Future<void> _toggleDevPremium() async {
+    setState(() => _isTogglingPremium = true);
+    try {
+      await _api.toggleDevPremium();
+      await authService.fetchMe();
+      if (mounted) setState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível alternar o modo teste.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isTogglingPremium = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +58,16 @@ class AccountScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const CollectionsScreen()),
               );
             },
+          ),
+          const Divider(),
+          // TEMPORÁRIO: só pra testar recursos premium antes do Google Play
+          // Billing existir de verdade. Remover quando a compra estiver pronta.
+          SwitchListTile(
+            secondary: const Icon(Icons.science_outlined),
+            title: const Text('Modo premium (teste)'),
+            subtitle: const Text('Temporário, até a compra de verdade existir'),
+            value: user.isPremium,
+            onChanged: _isTogglingPremium ? null : (_) => _toggleDevPremium(),
           ),
           const Divider(),
           ListTile(

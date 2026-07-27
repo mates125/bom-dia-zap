@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/category_card.dart';
 import 'account_screen.dart';
+import 'background_picker_screen.dart';
 import 'category_screen.dart';
 import 'login_screen.dart';
 
@@ -63,6 +64,42 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) setState(() {});
   }
 
+  Future<void> _openCustomEditor() async {
+    if (!authService.isLoggedIn) {
+      final loggedIn = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+      if (loggedIn != true || !mounted) return;
+    }
+
+    if (authService.currentUser?.isPremium != true) {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Recurso premium'),
+          content: const Text(
+            'Criar sua própria imagem é um recurso premium (R\$50, ou '
+            'R\$20 na promoção relâmpago). A compra ainda não está '
+            'disponível — em breve!',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Fechar'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const BackgroundPickerScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,6 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Bom Dia Zap'),
         centerTitle: false,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_awesome_rounded),
+            tooltip: 'Criar minha imagem',
+            onPressed: _openCustomEditor,
+          ),
           IconButton(
             icon: Icon(
               authService.isLoggedIn
