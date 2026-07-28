@@ -1,0 +1,18 @@
+<svg width="1024" height="500" viewBox="0 0 1024 500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="500" fill="#121212" />
+
+  <g transform="translate(-15.04, 44.96) scale(0.42)">
+    <g fill="none" stroke="#FFD166" stroke-width="22" stroke-linecap="round">
+      <line x1="512" y1="443" x2="512" y2="353" />
+      <line x1="617" y1="471.14" x2="662" y2="393.2" />
+      <line x1="407" y1="471.14" x2="362" y2="393.2" />
+      <line x1="693.86" y1="548" x2="771.8" y2="503" />
+      <line x1="330.14" y1="548" x2="252.2" y2="503" />
+    </g>
+    <path d="M 322 653 A 190 190 0 0 1 702 653 Z" fill="#FFD166" />
+    <rect x="232" y="653" width="560" height="18" rx="9" fill="#FFD166" />
+  </g>
+
+  <text x="400" y="255" font-family="Georgia, 'Segoe UI', Arial, sans-serif" font-size="92" fill="#FFD166">Bom Dia Zap</text>
+  <text x="402" y="305" font-family="'Segoe UI', Arial, sans-serif" font-size="30" fill="#F2EFE7">Imagens prontas pra compartilhar</text>
+</svg>
